@@ -1,0 +1,38 @@
+name: Run SQL and Java tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: testdb
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for MySQL
+        run: sleep 20
+
+      - name: Run schema and data scripts
+        run: |
+          sudo apt-get install -y mysql-client
+          mysql -h 127.0.0.1 -uroot -proot testdb < sql/create_and_populate.sql
+          mysql -h 127.0.0.1 -uroot -proot testdb < sql/queries.sql
+
+      - name: Compile and run Java (optional)
+        run: |
+          sudo apt-get install -y openjdk-17-jdk
+          javac java/App.java
+          java -cp java:. App
