@@ -1,0 +1,75 @@
+@startuml
+' Use the "entity" syntax for database-style ERDsL)
+
+hide circle
+hide methods
+hide stereotypes
+
+' --- ENTITIES ---
+entity "User" as User {
+  *UserID : Int
+  --
+  Username : Varchar(50)
+  Password : Varchar(255)
+}
+
+entity "Artist" as Artist {
+  *ArtistID : Int
+  --
+  Name : Varchar(50)
+  Genre : Varchar(50)
+  Country : Varchar(50)
+  UserID : Int <<FK>>
+}
+
+entity "Album" as Album {
+  *AlbumID : Int
+  --
+  Title : Varchar(50)
+  ReleaseDate : Date
+  ArtistID : Int <<FK>>
+}
+
+entity "Song" as Song {
+  *SongID : Int
+  --
+  Title : Varchar(50)
+  Duration : Int
+  TimesPlayed : Int
+  AlbumID : Int <<FK>>
+}
+
+entity "Playlist" as Playlist {
+  *PlaylistID : Int
+  --
+  Title : Varchar(50)
+  CreatedAt : Timestamp
+  UserID : Int <<FK>>
+}
+
+entity "Playlist_Song" as Playlist_Song {
+  *PlaylistID : Int <<FK>>
+  *SongID : Int <<FK>>
+  --
+  AddedAt : Timestamp
+}
+
+' --- RELATIONSHIPS ---
+
+' User - Artist (ISA subtype)
+User ||--|| Artist : "is a"
+
+' Artist creates Album
+Artist ||--o{ Album : "creates"
+
+' Album contains Song
+Album ||--o{ Song : "contains"
+
+' User creates Playlist
+User ||--o{ Playlist : "creates"
+
+' Playlist includes Song (M:N through Playlist_Song)
+Playlist ||--o{ Playlist_Song : "includes"
+Song ||--o{ Playlist_Song : "included in"
+
+@enduml

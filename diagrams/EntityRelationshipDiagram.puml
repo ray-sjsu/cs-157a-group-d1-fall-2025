@@ -1,0 +1,88 @@
+@startuml
+!theme plain
+left to right direction
+
+'=====================
+' Entities
+'=====================
+
+entity "Artist" as Artist {
+    *ArtistID : INT <<PK>>
+    --
+    Name : VARCHAR
+    Genre : VARCHAR
+    Country : VARCHAR
+    UserID : INT <<FK>>
+}
+
+entity "Album" as Album {
+    *AlbumID : INT <<PK>>
+    --
+    Title : VARCHAR
+    ReleaseDate : DATE
+    ArtistID : INT <<FK>>
+}
+
+entity "Songs" as Songs {
+    *SongID : INT <<PK>>
+    --
+    Title : VARCHAR
+    Duration : TIME
+    TimesPlayed : INT
+    AlbumID : INT <<FK>>
+}
+
+entity "User" as User {
+    *UserID : INT <<PK>>
+    --
+    Username : VARCHAR
+    Password : VARCHAR
+}
+
+entity "Playlist" as Playlist {
+    *PlaylistID : INT <<PK>>
+    --
+    Title : VARCHAR
+    CreatedAt : DATETIME
+    UserID : INT <<FK>>
+}
+
+entity "Playlist_Songs" as Playlist_Songs {
+    *PlaylistID : INT <<FK>>
+    *SongID : INT <<FK>>
+}
+
+'=====================
+' Relationships
+'=====================
+
+' Is A (User → Artist)
+User ||--|| Artist : "Is A"
+
+' User creates Playlist (1 to M)
+User ||--o{ Playlist : "Creates"
+
+' Artist creates Album (1 to M)
+Artist ||--o{ Album : "Creates"
+
+' Album contains Songs (1 to M)
+Album ||--o{ Songs : "Contains"
+
+' Playlist includes Songs (M to M through Playlist_Songs)
+Playlist ||--o{ Playlist_Songs : "Includes"
+Songs ||--o{ Playlist_Songs : "Includes"
+
+'=====================
+' Layout positioning (to visually replicate original)
+'=====================
+' Arrange corners
+top to bottom direction
+
+Artist -[hidden]-> Album
+User -[hidden]-> Playlist
+Artist -[hidden]-> User
+Album -[hidden]-> Songs
+Playlist -[hidden]-> Playlist_Songs
+Songs -[hidden]-> Playlist_Songs
+
+@enduml
