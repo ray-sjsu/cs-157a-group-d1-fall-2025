@@ -269,6 +269,7 @@ public class Main {
     /* ---------------------------------------------------
        9. Helper Functions
        --------------------------------------------------- */
+    // SQL
     private static void resetDatabase(Connection conn) {
         System.out.println("Resetting database...");
 
@@ -298,14 +299,25 @@ public class Main {
 
                 // If the line ends with semicolon → execute the statement
                 if (line.endsWith(";")) {
-                    String sql = sb.toString();
+                    String sql = sb.toString().trim();
                     sb.setLength(0); // reset buffer
 
                     // Remove the trailing semicolon
-                    sql = sql.substring(0, sql.length() - 1).trim();
+                    sql = sql.substring(0, sql.length() - 1);
 
-                    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                        ps.execute();
+                    try {
+                        System.out.println("\nExecuting SQL:\n" + sql);
+
+                        // SELECT behavior:
+                        if (sql.toLowerCase().startsWith("select")) {
+                            tryPrintSelectResult(conn, sql);
+                        } else {
+                            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                                ps.execute();
+                                System.out.println("Statement executed successfully.");
+                            }
+                        }
+
                     } catch (SQLException e) {
                         System.out.println("\n--- SQL EXECUTION ERROR ---");
                         System.out.println("Error executing: " + sql);
@@ -315,6 +327,38 @@ public class Main {
             }
         }
     }
+    private static void printSqlFileBeforeRunning(String filePath) {
+        System.out.println("\n--- SQL FILE: " + filePath + " ---");
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to read SQL file: " + e.getMessage());
+        }
+
+        System.out.println("\n--- END OF SQL FILE ---\n");
+    }
+    private static void tryPrintSelectResult(Connection conn, String sql) {
+        String trimmed = sql.trim().toLowerCase();
+
+        if (!trimmed.startsWith("select")) return;  // not a SELECT statement
+
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            System.out.println("\n--- RESULT SET ---");
+            printResultSetTable(rs);
+
+        } catch (SQLException e) {
+            System.out.println("Error printing SELECT result: " + e.getMessage());
+        }
+    }
+
+
+    // UI
     private static void printResultSetTable(ResultSet rs) {
         try {
             ResultSetMetaData md = rs.getMetaData();
