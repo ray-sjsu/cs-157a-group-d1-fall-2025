@@ -157,9 +157,95 @@ public class Main {
         }
     }
 
-    private static void insertUser(Connection conn, Scanner sc) { }
-    private static void insertArtist(Connection conn, Scanner sc) { }
-    private static void insertSong(Connection conn, Scanner sc) { }
+    private static void insertUser(Connection conn, Scanner sc) {
+        while (true) {
+            try {
+                System.out.println("\n--- Insert New User ---");
+                String username = readRequiredString(sc, "Username: ");
+                String password = readRequiredString(sc, "Password: ");
+
+                // TODO - prepared statement
+                String insertUserSQL = "";
+
+                try (PreparedStatement ps = conn.prepareStatement(insertUserSQL)) {
+                    ps.setString(1, username);
+                    ps.setString(2, password);
+                    ps.executeUpdate();
+                    System.out.println("User added successfully!");
+                }
+
+                return; // success → back to menu
+
+            } catch (SQLException e) {
+                System.out.println("Error inserting user: " + e.getMessage());
+                if (!askRetry(sc)) return;
+            }
+        }
+    }
+    private static void insertArtist(Connection conn, Scanner sc) {
+        while (true) {
+            try {
+                System.out.println("\n--- Insert New Artist ---");
+                String name = readRequiredString(sc, "Artist Name: ");
+                System.out.print("Genre (optional): ");
+                String genre = sc.nextLine().trim();
+                System.out.print("Country (optional): ");
+                String country = sc.nextLine().trim();
+                Integer userId = readOptionalInt(sc, "UserID (optional): ");
+
+                // TODO - prepared statement
+                String insertArtistSQL = "";
+
+                try (PreparedStatement ps = conn.prepareStatement(insertArtistSQL)) {
+                    ps.setString(1, name);
+                    ps.setString(2, genre.isEmpty() ? null : genre);
+                    ps.setString(3, country.isEmpty() ? null : country);
+
+                    if (userId == null)
+                        ps.setNull(4, java.sql.Types.INTEGER);
+                    else
+                        ps.setInt(4, userId);
+
+                    ps.executeUpdate();
+                    System.out.println("Artist added successfully!");
+                }
+
+                return;
+
+            } catch (SQLException e) {
+                System.out.println("Error inserting artist: " + e.getMessage());
+                if (!askRetry(sc)) return;
+            }
+        }
+    }
+    private static void insertSong(Connection conn, Scanner sc) {
+        while (true) {
+            try {
+                System.out.println("\n--- Insert New Song ---");
+                String title = readRequiredString(sc, "Song Title: ");
+                int duration = readPositiveInt(sc, "Duration (seconds > 0): ");
+                int albumId = readPositiveInt(sc, "AlbumID: ");
+
+                // TODO - prepared statement
+                String insertSongSQL = "";
+
+                try (PreparedStatement ps = conn.prepareStatement(insertSongSQL)) {
+                    ps.setString(1, title);
+                    ps.setInt(2, duration);
+                    ps.setInt(3, albumId);
+                    ps.executeUpdate();
+                    System.out.println("Song added successfully!");
+                }
+
+                return;
+
+            } catch (SQLException e) {
+                System.out.println("Error inserting song: " + e.getMessage());
+                if (!askRetry(sc)) return;
+            }
+        }
+    }
+
 
     /* ---------------------------------------------------
        5. UPDATE OPERATIONS
@@ -169,7 +255,7 @@ public class Main {
             System.out.println("\n===== MUSIC DB UPDATE OPTIONS MENU =====");
             System.out.println("1. Update User");
             System.out.println("2. Update Artist");
-            System.out.println("3. Update Song TimesPlayed");
+            System.out.println("3. Update Song");
             System.out.println("0. Return To Main Menu");
             System.out.print("Choose: ");
 
@@ -178,16 +264,171 @@ public class Main {
             switch (c) {
                 case "1": updateUser(conn, sc); break;
                 case "2": updateArtist(conn, sc); break;
-                case "3": updateSongTimesPlayed(conn, sc); break;
+                case "3": updateSong(conn, sc); break;
                 case "0": return;
                 default: System.out.println("Invalid option.");
             }
         }
     }
 
-    private static void updateUser(Connection conn, Scanner sc) { }
-    private static void updateArtist(Connection conn, Scanner sc) { }
-    private static void updateSongTimesPlayed(Connection conn, Scanner sc) { }
+    private static void updateUser(Connection conn, Scanner sc) {
+        viewUsers(conn);
+        System.out.println("\n--- Update User ---");
+
+        int id = readInt(sc, "Enter UserID: ");
+
+        // Load old data
+        String sqlOld = "SELECT Username, Password FROM User WHERE UserID = ?";
+        String oldUser = null, oldPass = null;
+
+        try (PreparedStatement ps = conn.prepareStatement(sqlOld)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    System.out.println("No user found with that ID.");
+                    return;
+                }
+                oldUser = rs.getString("Username");
+                oldPass = rs.getString("Password");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error loading user: " + e.getMessage());
+            return;
+        }
+
+        // Prefill update
+        System.out.println("Press ENTER to keep current value.");
+        String newUser = chooseNewValue(sc, "Username", oldUser);
+        String newPass = chooseNewValue(sc, "Password", oldPass);
+
+        // UPDATE
+        // TODO - prepared statement
+        String updateUserSQL = "";
+
+        try (PreparedStatement ps = conn.prepareStatement(updateUserSQL)) {
+            ps.setString(1, newUser);
+            ps.setString(2, newPass);
+            ps.setInt(3, id);
+            ps.executeUpdate();
+            System.out.println("User updated successfully!");
+        } catch (SQLException e) {
+            System.out.println("Error updating user: " + e.getMessage());
+        }
+    }
+    private static void updateArtist(Connection conn, Scanner sc) {
+        viewArtists(conn);
+        System.out.println("\n--- Update Artist ---");
+
+        int id = readInt(sc, "Enter ArtistID: ");
+
+        // Load existing row
+        String sqlOld = "SELECT Name, Genre, Country, UserID FROM Artist WHERE ArtistID = ?";
+        String oldName = null, oldGenre = null, oldCountry = null;
+        Integer oldUserID = null;
+
+        try (PreparedStatement ps = conn.prepareStatement(sqlOld)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    System.out.println("No artist found with that ID.");
+                    return;
+                }
+                oldName = rs.getString("Name");
+                oldGenre = rs.getString("Genre");
+                oldCountry = rs.getString("Country");
+                oldUserID = (Integer) rs.getObject("UserID");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error loading artist: " + e.getMessage());
+            return;
+        }
+
+        // Prefill prompt
+        System.out.println("Press ENTER to keep current value.");
+
+        String name = chooseNewValue(sc, "Name", oldName);
+        String genre = chooseNewValue(sc, "Genre", oldGenre == null ? "" : oldGenre);
+        String country = chooseNewValue(sc, "Country", oldCountry == null ? "" : oldCountry);
+        Integer userId = chooseNewInt(sc, "UserID", oldUserID);
+
+        // UPDATE
+        // TODO - prepared statement
+        String updateArtistSQL = "";
+
+        try (PreparedStatement ps = conn.prepareStatement(updateArtistSQL)) {
+            ps.setString(1, name);
+            ps.setString(2, genre.isEmpty() ? null : genre);
+            ps.setString(3, country.isEmpty() ? null : country);
+
+            if (userId == null)
+                ps.setNull(4, java.sql.Types.INTEGER);
+            else
+                ps.setInt(4, userId);
+
+            ps.setInt(5, id);
+
+            ps.executeUpdate();
+            System.out.println("Artist updated successfully!");
+        } catch (SQLException e) {
+            System.out.println("Error updating artist: " + e.getMessage());
+        }
+    }
+    private static void updateSong(Connection conn, Scanner sc) {
+        viewSongs(conn);
+        System.out.println("\n--- Update Song ---");
+
+        int id = readInt(sc, "Enter SongID: ");
+
+        // Load existing row
+        String sqlOld = "SELECT Title, Duration, AlbumID FROM Song WHERE SongID = ?";
+        String oldTitle = null;
+        int oldDuration = 0, oldAlbumID = 0;
+
+        try (PreparedStatement ps = conn.prepareStatement(sqlOld)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    System.out.println("No song found with that ID.");
+                    return;
+                }
+                oldTitle = rs.getString("Title");
+                oldDuration = rs.getInt("Duration");
+                oldAlbumID = rs.getInt("AlbumID");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error loading song: " + e.getMessage());
+            return;
+        }
+
+        // Prefill
+        System.out.println("Press ENTER to keep current value.");
+
+        String newTitle = chooseNewValue(sc, "Title", oldTitle);
+
+        System.out.print("Duration [" + oldDuration + "]: ");
+        String durStr = sc.nextLine().trim();
+        int newDuration = durStr.isEmpty() ? oldDuration : Integer.parseInt(durStr);
+
+        System.out.print("AlbumID [" + oldAlbumID + "]: ");
+        String albStr = sc.nextLine().trim();
+        int newAlbumID = albStr.isEmpty() ? oldAlbumID : Integer.parseInt(albStr);
+
+        // UPDATE
+        // TODO - prepared statement
+        String updateSongSQL = "";
+
+        try (PreparedStatement ps = conn.prepareStatement(updateSongSQL)) {
+            ps.setString(1, newTitle);
+            ps.setInt(2, newDuration);
+            ps.setInt(3, newAlbumID);
+            ps.setInt(4, id);
+
+            ps.executeUpdate();
+            System.out.println("Song updated successfully!");
+        } catch (SQLException e) {
+            System.out.println("Error updating song: " + e.getMessage());
+        }
+    }
 
     /* ---------------------------------------------------
        6. DELETE OPERATIONS
@@ -213,9 +454,63 @@ public class Main {
         }
     }
 
-    private static void deleteUser(Connection conn, Scanner sc) { }
-    private static void deleteArtist(Connection conn, Scanner sc) { }
-    private static void deleteSong(Connection conn, Scanner sc) { }
+    private static void deleteUser(Connection conn, Scanner sc) {
+        viewUsers(conn);
+        int userId = readInt(sc, "Enter UserID to delete: ");
+
+        // TODO - prepared statement
+        String deleteUserSQL = "";
+
+        try (PreparedStatement ps = conn.prepareStatement(deleteUserSQL)) {
+            ps.setInt(1, userId);
+
+            int rows = ps.executeUpdate();
+            if (rows > 0)
+                System.out.println("User deleted.");
+            else
+                System.out.println("No user found with that ID.");
+        } catch (SQLException e) {
+            System.out.println("Error deleting user: " + e.getMessage());
+        }
+    }
+    private static void deleteArtist(Connection conn, Scanner sc) {
+        viewArtists(conn);
+        int artistId = readInt(sc, "Enter ArtistID to delete: ");
+
+        // TODO - prepared statement
+        String deleteArtistSQL = "";
+
+        try (PreparedStatement ps = conn.prepareStatement(deleteArtistSQL)) {
+            ps.setInt(1, artistId);
+
+            int rows = ps.executeUpdate();
+            if (rows > 0)
+                System.out.println("Artist deleted.");
+            else
+                System.out.println("No artist found with that ID.");
+        } catch (SQLException e) {
+            System.out.println("Error deleting artist: " + e.getMessage());
+        }
+    }
+    private static void deleteSong(Connection conn, Scanner sc) {
+        viewSongs(conn);
+        int songId = readInt(sc, "Enter SongID to delete: ");
+
+        // TODO - prepared statement
+        String deleteSongSQL = "";
+
+        try (PreparedStatement ps = conn.prepareStatement(deleteSongSQL)) {
+            ps.setInt(1, songId);
+
+            int rows = ps.executeUpdate();
+            if (rows > 0)
+                System.out.println("Song deleted.");
+            else
+                System.out.println("No song found with that ID.");
+        } catch (SQLException e) {
+            System.out.println("Error deleting song: " + e.getMessage());
+        }
+    }
 
     /* ---------------------------------------------------
        7. TRANSACTION WORKFLOW (commit + rollback)
@@ -262,8 +557,6 @@ public class Main {
         }
     }
 
-    private static void callView(Connection conn) { }
-    private static void callStoredProcedure(Connection conn) { }
     private static void callView(Connection conn) {
         String filePath = "sql/view.sql";
         printSqlFileBeforeRunning(filePath);
@@ -439,4 +732,87 @@ public class Main {
             System.out.println("Error printing table: " + e.getMessage());
         }
     }
+    public static boolean askRetry(Scanner sc) {
+        while (true) {
+            System.out.print("Try again? (y/n): ");
+            String choice = sc.nextLine().trim().toLowerCase();
+
+            if (choice.equals("y")) return true;
+            if (choice.equals("n")) return false;
+
+            System.out.println("Invalid option. Please enter 'y' or 'n'.");
+        }
+    }
+
+
+    // Insert
+    private static String readRequiredString(Scanner sc, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = sc.nextLine().trim();
+            if (!input.isEmpty()) return input;
+
+            System.out.println("This field is required. Please try again.");
+        }
+    }
+    private static Integer readOptionalInt(Scanner sc, String prompt) {
+        System.out.print(prompt);
+        String input = sc.nextLine().trim();
+
+        if (input.isEmpty()) return null;
+
+        try {
+            return Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number. Treating as NULL.");
+            return null;
+        }
+    }
+    private static int readPositiveInt(Scanner sc, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = sc.nextLine().trim();
+
+            try {
+                int value = Integer.parseInt(input);
+                if (value > 0) return value;
+                System.out.println("Value must be > 0.");
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number. Please try again.");
+            }
+        }
+    }
+
+
+    // Update
+    private static int readInt(Scanner sc, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = sc.nextLine().trim();
+            try {
+                return Integer.parseInt(input);
+            } catch (Exception e) {
+                System.out.println("Invalid number. Try again.");
+            }
+        }
+    }
+    private static String chooseNewValue(Scanner sc, String fieldName, String oldValue) {
+        System.out.print(fieldName + " [" + oldValue + "]: ");
+        String input = sc.nextLine().trim();
+        return input.isEmpty() ? oldValue : input;
+    }
+    private static Integer chooseNewInt(Scanner sc, String fieldName, Integer oldValue) {
+        System.out.print(fieldName + " [" + (oldValue == null ? "" : oldValue) + "]: ");
+        String input = sc.nextLine().trim();
+
+        if (input.isEmpty()) return oldValue;
+
+        try {
+            return Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number. Keeping old value.");
+            return oldValue;
+        }
+    }
 }
+
