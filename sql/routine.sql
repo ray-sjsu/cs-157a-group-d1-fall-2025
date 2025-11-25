@@ -1,0 +1,4 @@
+-- At least ONE stored routine
+-- Either enforces a rule or automates a task
+-- Includes constraint
+-- Include SELECT statements to show results

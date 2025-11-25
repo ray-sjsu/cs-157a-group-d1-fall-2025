@@ -247,7 +247,7 @@ public class Main {
         while (true) {
             System.out.println("\n===== MUSIC DB VIEW PROCEDURES OPTIONS MENU =====");
             System.out.println("1. View (SELECT from VIEW)");
-            System.out.println("2. Call Stored Procedure");
+            System.out.println("2. Call Stored Procedure/Routine");
             System.out.println("0. Return To Main Menu");
             System.out.print("Choose: ");
 
@@ -264,6 +264,32 @@ public class Main {
 
     private static void callView(Connection conn) { }
     private static void callStoredProcedure(Connection conn) { }
+    private static void callView(Connection conn) {
+        String filePath = "sql/view.sql";
+        printSqlFileBeforeRunning(filePath);
+
+        System.out.println("\nCalling view SQL...");
+
+        try {
+            runSqlFile(conn, filePath);
+            System.out.println("View executed successfully.");
+        } catch (Exception e) {
+            System.out.println("Failed to execute view SQL: " + e.getMessage());
+        }
+    }
+    private static void callStoredProcedure(Connection conn) {
+        String filePath = "sql/routine.sql";
+        printSqlFileBeforeRunning(filePath);
+
+        System.out.println("\nCalling stored procedure SQL...");
+
+        try {
+            runSqlFile(conn, filePath);
+            System.out.println("Stored procedure executed successfully.");
+        } catch (Exception e) {
+            System.out.println("Failed to execute stored procedure SQL: " + e.getMessage());
+        }
+    }
 
 
     /* ---------------------------------------------------

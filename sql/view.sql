@@ -1,0 +1,4 @@
+-- At least ONE view
+-- For reporting or convenience
+-- Tables used: User, Artist, Song
+-- Include SELECT statements to show results
