@@ -72,7 +72,7 @@ public class Main {
                 case "2": insertMenu(conn, sc); break;
                 case "3": updateMenu(conn, sc); break;
                 case "4": deleteMenu(conn, sc); break;
-                case "5": runTransactionDemo(conn); break;
+                case "5": transactionDemoMenu(conn, sc); break;
                 case "6": runViewProcedureMenu(conn, sc); break;
                 case "999": resetDatabase(conn); break;
                 case "0": return;
@@ -515,14 +515,62 @@ public class Main {
     /* ---------------------------------------------------
        7. TRANSACTION WORKFLOW (commit + rollback)
        --------------------------------------------------- */
+    private static void transactionDemoMenu(Connection conn, Scanner sc) {
+        while (true) {
+            System.out.println("\n===== TRANSACTION DEMO MENU =====");
+            System.out.println("1. Run Transaction and COMMIT");
+            System.out.println("2. Run Transaction and ROLLBACK");
+            System.out.println("0. Return To Main Menu");
+            System.out.print("Choose: ");
+
+            String c = sc.nextLine();
+
+            switch (c) {
+                case "1":
+                    System.out.println("\n--- Starting Transaction and Committing ---");
+                    try {
+                        conn.setAutoCommit(false);
+                        runTransactionDemo(conn);
+
+                    } catch (Exception e) {
+                        System.out.println("Error during commit workflow: " + e.getMessage());
+                        try { conn.rollback(); } catch (SQLException ignored) {}
+                    } finally {
+                        try { conn.setAutoCommit(true); } catch (SQLException ignored) {}
+                    }
+                    break;
+
+                case "2":
+                    System.out.println("\n--- Starting Transaction and Rolling Back ---");
+                    try {
+                        conn.setAutoCommit(false);
+                        runTransactionDemo(conn);
+
+                        System.out.println("Forcing rollback...");
+                        conn.rollback();
+                        System.out.println("Transaction rolled back successfully.");
+                    } catch (Exception e) {
+                        System.out.println("Error during rollback workflow: " + e.getMessage());
+                        try { conn.rollback(); } catch (SQLException ignored) {}
+                    } finally {
+                        try { conn.setAutoCommit(true); } catch (SQLException ignored) {}
+                    }
+                    break;
+                case "0":
+                    return;
+                default:
+                    System.out.println("Invalid option.");
+            }
+        }
+    }
+
     private static void runTransactionDemo(Connection conn) {
         System.out.println("Running transactional workflow...");
         try {
             conn.setAutoCommit(false);
 
-            // Example: Insert Artist, Insert Album, Insert Song
-            // If any fail → rollback
-
+            // TODO - Transaction demo
+            // Example: Insert User, Insert Artist, Insert Song OR Add Song, Link to Artist? What ever you want.
             // placeholder for multi-step operations
 
             conn.commit();
