@@ -178,7 +178,7 @@ public class Main {
 
             } catch (SQLException e) {
                 System.out.println("Error inserting user: " + e.getMessage());
-                if (!askRetry(sc)) return;
+                if (askRetry(sc)) return;
             }
         }
     }
@@ -214,7 +214,7 @@ public class Main {
 
             } catch (SQLException e) {
                 System.out.println("Error inserting artist: " + e.getMessage());
-                if (!askRetry(sc)) return;
+                if (askRetry(sc)) return;
             }
         }
     }
@@ -241,7 +241,7 @@ public class Main {
 
             } catch (SQLException e) {
                 System.out.println("Error inserting song: " + e.getMessage());
-                if (!askRetry(sc)) return;
+                if (askRetry(sc)) return;
             }
         }
     }
@@ -279,7 +279,7 @@ public class Main {
 
         // Load old data
         String sqlOld = "SELECT Username, Password FROM User WHERE UserID = ?";
-        String oldUser = null, oldPass = null;
+        String oldUser, oldPass;
 
         try (PreparedStatement ps = conn.prepareStatement(sqlOld)) {
             ps.setInt(1, id);
@@ -323,8 +323,8 @@ public class Main {
 
         // Load existing row
         String sqlOld = "SELECT Name, Genre, Country, UserID FROM Artist WHERE ArtistID = ?";
-        String oldName = null, oldGenre = null, oldCountry = null;
-        Integer oldUserID = null;
+        String oldName, oldGenre, oldCountry;
+        Integer oldUserID;
 
         try (PreparedStatement ps = conn.prepareStatement(sqlOld)) {
             ps.setInt(1, id);
@@ -381,8 +381,8 @@ public class Main {
 
         // Load existing row
         String sqlOld = "SELECT Title, Duration, AlbumID FROM Song WHERE SongID = ?";
-        String oldTitle = null;
-        int oldDuration = 0, oldAlbumID = 0;
+        String oldTitle;
+        int oldDuration, oldAlbumID;
 
         try (PreparedStatement ps = conn.prepareStatement(sqlOld)) {
             ps.setInt(1, id);
@@ -785,8 +785,8 @@ public class Main {
             System.out.print("Try again? (y/n): ");
             String choice = sc.nextLine().trim().toLowerCase();
 
-            if (choice.equals("y")) return true;
-            if (choice.equals("n")) return false;
+            if (choice.equals("y")) return false;
+            if (choice.equals("n")) return true;
 
             System.out.println("Invalid option. Please enter 'y' or 'n'.");
         }
