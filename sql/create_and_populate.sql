@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS `User`;
 
 CREATE TABLE IF NOT EXISTS `User` (
   UserID INT auto_increment PRIMARY KEY,
-  Username VARCHAR(50) NOT NULL,
+  Username VARCHAR(50) NOT NULL UNIQUE,
   Password VARCHAR(255) NOT NULL
 );
 
