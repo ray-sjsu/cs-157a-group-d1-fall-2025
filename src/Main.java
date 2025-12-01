@@ -173,6 +173,13 @@ public class Main {
                     System.out.println("User added successfully!");
                 }
 
+                String selectSQL = "SELECT UserID, Username, Password FROM User WHERE Username = ?";
+                try (PreparedStatement ps = conn.prepareStatement(selectSQL)) {
+                    ps.setString(1, username);
+                    ResultSet rs = ps.executeQuery();
+                    printResultSetTable(rs);
+                }
+
                 return; // success → back to menu
 
             } catch (SQLException e) {
@@ -208,6 +215,13 @@ public class Main {
                     System.out.println("Artist added successfully!");
                 }
 
+                String selectSQL = "SELECT ArtistID, Name, Genre, Country, UserID FROM Artist WHERE Name = ?";
+                try (PreparedStatement ps = conn.prepareStatement(selectSQL)) {
+                    ps.setString(1, name);
+                    ResultSet rs = ps.executeQuery();
+                    printResultSetTable(rs);
+                }
+
                 return;
 
             } catch (SQLException e) {
@@ -232,6 +246,13 @@ public class Main {
                     ps.setInt(3, albumId);
                     ps.executeUpdate();
                     System.out.println("Song added successfully!");
+                }
+
+                String selectSQL = "SELECT SongID, Title, Duration, AlbumID FROM Song WHERE Title = ?";
+                try (PreparedStatement ps = conn.prepareStatement(selectSQL)) {
+                    ps.setString(1, title);
+                    ResultSet rs = ps.executeQuery();
+                    printResultSetTable(rs);
                 }
 
                 return;
@@ -310,6 +331,16 @@ public class Main {
         } catch (SQLException e) {
             System.out.println("Error updating user: " + e.getMessage());
         }
+
+        String selectSQL = "SELECT UserID, Username, Password FROM User WHERE Username = ?";
+        try (PreparedStatement ps = conn.prepareStatement(selectSQL)) {
+            ps.setString(1, newUser);
+            ResultSet rs = ps.executeQuery();
+            printResultSetTable(rs);
+        } catch (SQLException e) {
+            // None
+        }
+
     }
     private static void updateArtist(Connection conn, Scanner sc) {
         viewArtists(conn);
@@ -367,6 +398,15 @@ public class Main {
         } catch (SQLException e) {
             System.out.println("Error updating artist: " + e.getMessage());
         }
+
+        String selectSQL = "SELECT ArtistID, Name, Genre, Country, UserID FROM Artist WHERE Name = ?";
+        try (PreparedStatement ps = conn.prepareStatement(selectSQL)) {
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            printResultSetTable(rs);
+        } catch (SQLException e) {
+            // None
+        }
     }
     private static void updateSong(Connection conn, Scanner sc) {
         viewSongs(conn);
@@ -422,6 +462,16 @@ public class Main {
         } catch (SQLException e) {
             System.out.println("Error updating song: " + e.getMessage());
         }
+
+        String selectSQL = "SELECT SongID, Title, Duration, AlbumID FROM Song WHERE Title = ?";
+        try (PreparedStatement ps = conn.prepareStatement(selectSQL)) {
+            ps.setString(1, newTitle);
+            ResultSet rs = ps.executeQuery();
+            printResultSetTable(rs);
+        } catch (SQLException e) {
+            // None
+        }
+
     }
 
     /* ---------------------------------------------------
