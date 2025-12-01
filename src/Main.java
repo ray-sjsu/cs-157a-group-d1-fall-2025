@@ -561,6 +561,7 @@ public class Main {
             System.out.println("\n===== TRANSACTION DEMO MENU =====");
             System.out.println("1. Run Transaction and COMMIT");
             System.out.println("2. Run Transaction and ROLLBACK");
+            System.out.println("999. Reset Database");
             System.out.println("0. Return To Main Menu");
             System.out.print("Choose: ");
 
@@ -571,7 +572,11 @@ public class Main {
                     System.out.println("\n--- Starting Transaction and Committing ---");
                     try {
                         conn.setAutoCommit(false);
+
                         runTransactionDemo(conn);
+
+                        conn.commit();
+                        System.out.println("Transaction committed.");
 
                     } catch (Exception e) {
                         System.out.println("Error during commit workflow: " + e.getMessage());
@@ -597,6 +602,7 @@ public class Main {
                         try { conn.setAutoCommit(true); } catch (SQLException ignored) {}
                     }
                     break;
+                case "999": resetDatabase(conn); break;
                 case "0":
                     return;
                 default:
@@ -608,19 +614,66 @@ public class Main {
     private static void runTransactionDemo(Connection conn) {
         System.out.println("Running transactional workflow...");
         try {
-            conn.setAutoCommit(false);
+            String insertUserSql="INSERT INTO `User` (Username, Password) VALUES (?, ?)";
+            int newUserId;
+            try (PreparedStatement psUser = conn.prepareStatement(insertUserSql, Statement.RETURN_GENERATED_KEYS)){
+                psUser.setString(1, "famous_artist_user");
+                psUser.setString(2, "strongpassword"); //dummy password
+                int rows = psUser.executeUpdate();
+                System.out.println("Inserted into User: "+rows +" rows.");
+                try (ResultSet rs=psUser.getGeneratedKeys()){
+                    if (!rs.next()){
+                        throw new SQLException("Failed to get generated UserID");
+                    }
+                    newUserId = rs.getInt(1);
+                }
+            }
 
-            // TODO - Transaction demo
-            // Example: Insert User, Insert Artist, Insert Song OR Add Song, Link to Artist? What ever you want.
-            // placeholder for multi-step operations
+            String insertArtistSql ="INSERT INTO Artist (Name, Genre, Country, UserID) VALUES (?, ?, ?, ?)";
+            int newArtistId;
+            try (PreparedStatement psArtist = conn.prepareStatement(insertArtistSql, Statement.RETURN_GENERATED_KEYS)) {
+                psArtist.setString(1,"Demo Transaction Artist");
+                psArtist.setString(2,"Indie");
+                psArtist.setString(3,"USA");
+                psArtist.setInt(4, newUserId);
+                int rows = psArtist.executeUpdate();
+                System.out.println("Inserted into Artist: "+ rows+ " rows.");
+                try (ResultSet rs = psArtist.getGeneratedKeys()){
+                    if (!rs.next()){
+                        throw new SQLException("Failed to get generated ArtistID");
+                    }
+                    newArtistId = rs.getInt(1);
+                }
+            }
 
-            conn.commit();
-            System.out.println("Transaction committed.");
+            String insertAlbumSql = "INSERT INTO Album (Title, ReleaseDate, ArtistID) VALUES (?, ?, ?)";
+            int newAlbumId;
+            try (PreparedStatement psAlbum = conn.prepareStatement(insertAlbumSql, Statement.RETURN_GENERATED_KEYS)){
+                psAlbum.setString(1,"Best Album Ever");
+                psAlbum.setDate(2, java.sql.Date.valueOf("2024-10-12"));
+                psAlbum.setInt(3, newArtistId);
+                int rows= psAlbum.executeUpdate();
+                System.out.println("Inserted into Album: "+ rows + " rows.");
+                try (ResultSet rs = psAlbum.getGeneratedKeys()){
+                    if (!rs.next()) {
+                        throw new SQLException("Failed to get generated AlbumID");
+                    }
+                    newAlbumId = rs.getInt(1);
+                }
+            }
+
+            String insertSongSql ="INSERT INTO Song (Title, Duration, AlbumID, TimesPlayed) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement psSong = conn.prepareStatement(insertSongSql)){
+                psSong.setString(1, "Demo Transaction Song");
+                psSong.setInt(2, 210);
+                psSong.setInt(3, newAlbumId);
+                psSong.setInt(4, 0);
+                int rows = psSong.executeUpdate();
+                System.out.println("Inserted into Song: " + rows + " rows.");
+            }
+
         } catch (Exception e) {
-            try { conn.rollback(); } catch (SQLException ignored) {}
-            System.out.println("Transaction rolled back: " + e.getMessage());
-        } finally {
-            try { conn.setAutoCommit(true); } catch (SQLException ignored) {}
+            System.out.println("Failed to run transaction: " + e.getMessage());
         }
     }
 
