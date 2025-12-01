@@ -4,6 +4,7 @@
 -- Include SELECT statements to show results
 DELIMITER $$
 
+DROP FUNCTION IF EXISTS AlbumDuration $$
 CREATE FUNCTION AlbumDuration(a_id INT)
 RETURNS INT
 DETERMINISTIC
