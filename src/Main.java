@@ -299,8 +299,7 @@ public class Main {
         String newPass = chooseNewValue(sc, "Password", oldPass);
 
         // UPDATE
-        // TODO - prepared statement
-        String updateUserSQL = "";
+        String updateUserSQL = "UPDATE User SET Username = ?, Password = ? WHERE UserID = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(updateUserSQL)) {
             ps.setString(1, newUser);
@@ -349,8 +348,7 @@ public class Main {
         Integer userId = chooseNewInt(sc, "UserID", oldUserID);
 
         // UPDATE
-        // TODO - prepared statement
-        String updateArtistSQL = "";
+        String updateArtistSQL = "UPDATE Artist SET Name=?, Genre=?, Country=?, UserID=? WHERE ArtistID=?";
 
         try (PreparedStatement ps = conn.prepareStatement(updateArtistSQL)) {
             ps.setString(1, name);
@@ -411,8 +409,7 @@ public class Main {
         int newAlbumID = albStr.isEmpty() ? oldAlbumID : Integer.parseInt(albStr);
 
         // UPDATE
-        // TODO - prepared statement
-        String updateSongSQL = "";
+        String updateSongSQL = "UPDATE Song SET Title=?, Duration=?, AlbumID=? WHERE SongID=?";
 
         try (PreparedStatement ps = conn.prepareStatement(updateSongSQL)) {
             ps.setString(1, newTitle);
