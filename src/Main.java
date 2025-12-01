@@ -743,6 +743,7 @@ public class Main {
     }
     private static void runSqlFile(Connection conn, String filePath) throws Exception {
         StringBuilder sb = new StringBuilder();
+        String delimiter = ";"; // default delimiter
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -750,39 +751,39 @@ public class Main {
             while ((line = br.readLine()) != null) {
                 line = line.trim();
 
-                int commentIndex = line.indexOf("--");
-                if (commentIndex != -1) {
-                    line = line.substring(0, commentIndex).trim();
-                }
-
-                // Skip empty lines or comments
-                if (line.isEmpty() || line.startsWith("--") || line.startsWith("#")) {
+                // Ignore comment lines
+                if (line.startsWith("--") || line.startsWith("#") || line.isEmpty()) {
                     continue;
                 }
 
-                // Accumulate SQL text
-                sb.append(line).append(" ");
+                // Detect delimiter change
+                if (line.toUpperCase().startsWith("DELIMITER")) {
+                    delimiter = line.substring("DELIMITER".length()).trim();
+                    continue;
+                }
 
-                // If the line ends with semicolon → execute the statement
-                if (line.endsWith(";")) {
+                sb.append(line).append("\n");
+
+                // Check if statement ends with the current delimiter
+                if (sb.toString().trim().endsWith(delimiter)) {
                     String sql = sb.toString().trim();
-                    sb.setLength(0); // reset buffer
+                    sb.setLength(0);
 
-                    // Remove the trailing semicolon
-                    sql = sql.substring(0, sql.length() - 1);
+                    // Remove the delimiter from the end
+                    sql = sql.substring(0, sql.length() - delimiter.length()).trim();
 
                     try {
                         System.out.println("\nExecuting SQL:\n" + sql);
 
-                        // SELECT behavior:
                         if (sql.toLowerCase().startsWith("select")) {
                             tryPrintSelectResult(conn, sql);
                         } else {
                             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                                 ps.execute();
-                                System.out.println("Statement executed successfully.");
                             }
                         }
+
+                        System.out.println("Statement executed successfully.");
 
                     } catch (SQLException e) {
                         System.out.println("\n--- SQL EXECUTION ERROR ---");
