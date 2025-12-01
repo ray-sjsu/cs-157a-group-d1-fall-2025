@@ -164,8 +164,7 @@ public class Main {
                 String username = readRequiredString(sc, "Username: ");
                 String password = readRequiredString(sc, "Password: ");
 
-                // TODO - prepared statement
-                String insertUserSQL = "";
+                String insertUserSQL = "INSERT INTO User (Username, Password) VALUES (?, ?)";
 
                 try (PreparedStatement ps = conn.prepareStatement(insertUserSQL)) {
                     ps.setString(1, username);
@@ -193,8 +192,7 @@ public class Main {
                 String country = sc.nextLine().trim();
                 Integer userId = readOptionalInt(sc, "UserID (optional): ");
 
-                // TODO - prepared statement
-                String insertArtistSQL = "";
+                String insertArtistSQL = "INSERT INTO Artist (Name, Genre, Country, UserID) VALUES (?, ?, ?, ?)";
 
                 try (PreparedStatement ps = conn.prepareStatement(insertArtistSQL)) {
                     ps.setString(1, name);
@@ -226,8 +224,7 @@ public class Main {
                 int duration = readPositiveInt(sc, "Duration (seconds > 0): ");
                 int albumId = readPositiveInt(sc, "AlbumID: ");
 
-                // TODO - prepared statement
-                String insertSongSQL = "";
+                String insertSongSQL = "INSERT INTO Song (Title, Duration, AlbumID) VALUES (?, ?, ?)";
 
                 try (PreparedStatement ps = conn.prepareStatement(insertSongSQL)) {
                     ps.setString(1, title);
