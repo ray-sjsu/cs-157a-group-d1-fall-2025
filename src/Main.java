@@ -697,6 +697,11 @@ public class Main {
             while ((line = br.readLine()) != null) {
                 line = line.trim();
 
+                int commentIndex = line.indexOf("--");
+                if (commentIndex != -1) {
+                    line = line.substring(0, commentIndex).trim();
+                }
+
                 // Skip empty lines or comments
                 if (line.isEmpty() || line.startsWith("--") || line.startsWith("#")) {
                     continue;
