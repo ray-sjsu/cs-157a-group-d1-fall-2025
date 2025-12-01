@@ -452,8 +452,7 @@ public class Main {
         viewUsers(conn);
         int userId = readInt(sc, "Enter UserID to delete: ");
 
-        // TODO - prepared statement
-        String deleteUserSQL = "";
+        String deleteUserSQL = "DELETE FROM User WHERE UserID = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(deleteUserSQL)) {
             ps.setInt(1, userId);
@@ -471,8 +470,7 @@ public class Main {
         viewArtists(conn);
         int artistId = readInt(sc, "Enter ArtistID to delete: ");
 
-        // TODO - prepared statement
-        String deleteArtistSQL = "";
+        String deleteArtistSQL = "DELETE FROM Artist WHERE ArtistID = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(deleteArtistSQL)) {
             ps.setInt(1, artistId);
@@ -490,8 +488,7 @@ public class Main {
         viewSongs(conn);
         int songId = readInt(sc, "Enter SongID to delete: ");
 
-        // TODO - prepared statement
-        String deleteSongSQL = "";
+        String deleteSongSQL = "DELETE FROM Song WHERE SongID = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(deleteSongSQL)) {
             ps.setInt(1, songId);
