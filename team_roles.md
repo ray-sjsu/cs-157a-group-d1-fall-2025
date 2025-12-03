@@ -13,7 +13,7 @@ In Phase C, SQL code were reused from Phase A and B. This is a summary of the wo
 - Jonathan proposed the initial project idea of a Music Application database.
 - Daeren and Jonathan worked together on the entity-relationship, and relational schema diagrams.
 - Christopher setup team collaboration in LucidChart to create diagrams. Finalized the diagrams.
-- Raymund revised and review the diagrams. Created and formatted powerpoint presentation.
+- Raymund revised and reviewed the diagrams. Created and formatted powerpoint presentation.
 
 ### Phase B
 - Christopher and Daeren worked on SQL statements in `.sql` files (Population, Creation, Indexes, `SELECT`, `TRIGGERS`).

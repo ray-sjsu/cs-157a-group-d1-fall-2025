@@ -16,7 +16,7 @@ For more details on how this application was built and a live demo, please view 
 
 ## Installation Guide
 ### Install and run MySQL server
-0. Download project with `sql`, `src`, and various `.md` files all in one directory.
+0. Download project `.zip`. Make sure all folders `sql`, `src`, and various `.md` files are under one project directory.
 1. Install MySQL installer community version [8.0.43](https://downloads.mysql.com/archives/installer/). Then, open the MySQL installer `.exe`.
 2. Open MySQL installer, then install MySQL server version 8.0.43.
 3. In `Type and Networking`, select Config Type: `Development Computer`, check TCP/IP with a port of `3306`. Press `Next`.
@@ -41,7 +41,7 @@ For more details on how this application was built and a live demo, please view 
 18. Open the project directory.
 19. In Intellj, select the `src` folder as a `Sources Root`.
 20. On the top right, click the green `Run` button or equivalent to start the program.
-
+21. To create the tables and populate the database, enter `999` to reset the database.
 ---
 
 ## General Structure

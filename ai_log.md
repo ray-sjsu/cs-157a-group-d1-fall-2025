@@ -3,12 +3,13 @@
 ## Creation of UI/UX menu with error handling
 We asked ChatGPT to design boilerplate code for a reusable UI/UX menu. It suggested using try, catch and exception handling to automatically generate error messages without defining for each possible error scenario.
 
-We used the boilerplate code and reusable functions, which formed the foundation of our UI/UX console based menu.
+We adopted the boilerplate code and reusable functions, which formed the foundation of our UI/UX console based menu.
 
 However, we had more experience in object-oriented programming principles. The AI made some questionable decisions:
 - Recreating Scanner `sc` object for every menu and submenu. This is questionable because Scanner meant to be defined once for use in the entire program to improve performance and enforce DRY principle. We passed along `sc` for every menu and submenu through parameters.
-- Example AI suggested function header: `private static void runMenu(Connection conn)`
-- Revised function header with `sc`: `private static void runMenu(Connection conn, Scanner sc)`
+- Example AI suggested function header: `private static void runMenu(Connection conn)`. Then, created new Scanner object in each function.
+
+What we changed and revised is the function headers with Scanner `sc`: `private static void runMenu(Connection conn, Scanner sc)`. Every submenu now passes a Scanner and Connection object. You still need to pass the Connection object if you want to run PreparedStatements. This follows object-oriented programming principles.
 
 ### Example Prompt:
 We mostly had discussions and debates on code structure and layout in `Main.java` like in this example:
@@ -21,7 +22,9 @@ In your case, though, each main menu category (View, Insert, Update, Delete) alr
 However — the VIEW functions themselves can share a common pattern, even if the SQL differs...
 
 ## SQL parser
-Java does not natively support SQL parsing. We wanted to parse a `.sql` file for use in formatted output and troubleshooting. Since this is a SQL class and not a Java class, the SQL parser function was sufficient for most of our needs with some modifications in handling multi-line comments.
+Java does not natively support SQL parsing, and we did not want to use an external library. We wanted to translate/parse a `.sql` file for use in formatted output and troubleshooting. Since this is a SQL class and not a Java class, the SQL parser function was sufficient for our needs with some modifications in handling multi-line comments.
+
+What we adopted is the SQL parser function, alongside some Utility functions. We made a few changes to the initial SQL parser function by also handling DELIMITERS.
 
 ### Example Prompt:
 > Create SQL parser
@@ -77,7 +80,9 @@ private static void runSqlFile(Connection conn, String filePath) throws Exceptio
 ```
 
 ## Requirements checklist
-We asked ChatGPT to create a simple to read checklist. An example format was provided before this prompt. The prompt below was the from the `Project Document Initial Instructions` google doc. We made sure to double check and modify the checklist if there were important details missing or reword. Due to the size of AI's memories (context window), it did miss some important details.
+We asked ChatGPT to create a simple-to-read checklist. An example format was provided before this prompt. The prompt below was the from the `Project Document Initial Instructions` google doc. We made sure to double check and modify the checklist if there were important details missing or reword. This checklist was mainly used for project management and progress tracking.
+
+What we adopted is the checklist. However, we rewrote some entries to be inline with the `Project Document Initial Instructions` google doc. For example, we made sure `.sql` file into its own `sql` folder and `Main.java` into a `src` folder for organization.
 
 ### Example Prompt:
 

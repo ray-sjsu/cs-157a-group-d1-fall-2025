@@ -25,44 +25,44 @@ You’ll also prepare a **video demo** and a **submission package** with all req
 
 ## 🛠️ Step 1 — JDBC Setup and Connection Test
 
-* ✅ Create `app.properties` file that stores:
+* ☐ Create `app.properties` file that stores:
 
-    * ✅ Database URL
-    * ✅ Username
-    * ✅ Password
-* ✅ Load `app.properties` from Java.
-* ✅ Use JDBC to connect to the MySQL database.
-* ✅ Verify the JDBC driver loads correctly (no ClassNotFound / driver errors).
-* ✅ Gracefully handle and print clear errors if connection fails.
+    * ☐ Database URL
+    * ☐ Username
+    * ☐ Password
+* ☐ Load `app.properties` from Java.
+* ☐ Use JDBC to connect to the MySQL database.
+* ☐ Verify the JDBC driver loads correctly (no ClassNotFound / driver errors).
+* ☐ Gracefully handle and print clear errors if connection fails.
 
 ---
 
 ## 🧾 Step 2 — Console Menu with Scanner I/O
 
-* ✅ Build a **text-based menu** with at least these options:
+* ☐ Build a **text-based menu** with at least these options:
 
-    * ✅ View data
-    * ⚠️ Insert
-    * ⚠️ Update
-    * ⚠️ Delete
-    * ⚠️ Run transaction
-    * ✅ Exit
-* ✅ Use `Scanner` for all user input.
-* ✅ Operate on **at least 3 key tables** from your schema:
+    * ☐ View data
+    * ☐ Insert
+    * ☐️ Update
+    * ☐ Delete
+    * ☐ Run transaction
+    * ☐ Exit
+* ☐ Use `Scanner` for all user input.
+* ☐ Operate on **at least 3 key tables** from your schema:
 
-    * ✅ Each of the 3 tables has at least one **SELECT (view)** option.
-* ✅ For **INSERT/UPDATE/DELETE**, choose appropriate tables that make sense.
-    * ✅ User
-    * ✅ Artist
-    * ✅ Song
-* ✅ Show the menu looping until the user chooses **Exit**.
+    * ☐ Each of the 3 tables has at least one **SELECT (view)** option.
+* ☐ For **INSERT/UPDATE/DELETE**, choose appropriate tables that make sense.
+    * ☐ User
+    * ☐ Artist
+    * ☐ Song
+* ☐ Show the menu looping until the user chooses **Exit**.
 
 ---
 
 ## 💾 Step 3 — Implement PreparedStatements
 
 * ☐ Use **PreparedStatement** for **all** SQL operations (no raw string concatenation).
-* ✅ Implement **SELECT** operations using PreparedStatements.
+* ☐ Implement **SELECT** operations using PreparedStatements.
 * ☐ Implement **INSERT** operations using PreparedStatements.
 * ☐ Implement **UPDATE** operations using PreparedStatements.
 * ☐ Implement **DELETE** operations using PreparedStatements.
