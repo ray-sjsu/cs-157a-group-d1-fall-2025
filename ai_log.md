@@ -79,6 +79,9 @@ private static void runSqlFile(Connection conn, String filePath) throws Exceptio
 }
 ```
 
+## View Creation Assist
+In order to create the view, we asked AI to help format the way that our view should be created, giving us an idea of where to begin. After creating the view, we had AI make the code look cleaner and more concise, allowing for us to add clearer comments.
+
 ## Requirements checklist
 We asked ChatGPT to create a simple-to-read checklist. An example format was provided before this prompt. The prompt below was the from the `Project Document Initial Instructions` google doc. We made sure to double check and modify the checklist if there were important details missing or reword. This checklist was mainly used for project management and progress tracking.
 
